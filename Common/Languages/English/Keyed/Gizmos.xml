@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<LanguageData>
+    <NonBinary.Gizmos.ChangeGender.Label>Change Gender</NonBinary.Gizmos.ChangeGender.Label>
+    <NonBinary.Gizmos.ChangeGender.Description>Click to change this pawn's gender.</NonBinary.Gizmos.ChangeGender.Description>
+</LanguageData>
