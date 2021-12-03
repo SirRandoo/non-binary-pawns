@@ -25,6 +25,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using HarmonyLib;
 using JetBrains.Annotations;
+using SirRandoo.NonBinary.Defs;
 using Verse;
 
 namespace SirRandoo.NonBinary.Patches
@@ -35,17 +36,25 @@ namespace SirRandoo.NonBinary.Patches
     {
         public static IEnumerable<MethodBase> TargetMethods()
         {
-            yield return AccessTools.Method(typeof(PawnGenerator), "GeneratePawn");
+            yield return AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] { typeof(PawnGenerationRequest) });
         }
 
         [SuppressMessage("ReSharper", "InconsistentNaming")]
-        public static void Postfix(Gender? fixedGender, Pawn __result)
+        public static void Postfix(PawnGenerationRequest request, Pawn __result)
         {
-            if (fixedGender.HasValue || !__result.RaceProps.hasGenders || !Rand.Chance(Settings.NonBinaryChance))
+            if (request.FixedGender.HasValue || !__result.RaceProps.hasGenders || !Rand.Chance(Settings.NonBinaryChance))
             {
                 return;
             }
 
+            var comp = __result.TryGetComp<GenderControllerComp>();
+
+            if (comp == null)
+            {
+                return;
+            }
+
+            comp.PerformFirstRun();
             __result.gender = Gender.None;
         }
     }
