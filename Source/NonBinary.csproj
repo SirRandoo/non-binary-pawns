@@ -40,6 +40,7 @@
         <Compile Include="Defs\GenderControllerComp.cs" />
         <Compile Include="GenderlessMod.cs" />
         <Compile Include="Helpers\SettingsHelper.cs" />
+        <Compile Include="Models\AppearanceData.cs" />
         <Compile Include="Patches\PatchWorker.cs" />
         <Compile Include="Patches\PawnGeneratorPatch.cs" />
         <Compile Include="Patches\ResolveAllGraphicsPatch.cs" />
