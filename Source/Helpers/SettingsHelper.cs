@@ -351,6 +351,7 @@ namespace SirRandoo.NonBinary.Helpers
             }
         }
 
+        [ContractAnnotation("=> true,newContent:notnull; => false,newContent:null")]
         public static bool DrawTextField(Rect region, string content, [CanBeNull] out string newContent)
         {
             string text = Widgets.TextField(region, content);

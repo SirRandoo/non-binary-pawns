@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
+using SirRandoo.NonBinary.Helpers;
 using UnityEngine;
 using Verse;
 
@@ -27,13 +29,37 @@ namespace SirRandoo.NonBinary
 {
     public class Settings : ModSettings
     {
-        public static float NonBinaryChance = 10f;
+        public static float NonBinaryChance = 0.1f;
+        private static string _nonBinaryChanceBuffer;
 
-        public static void Draw(Rect region) { }
+        public static void Draw(Rect region)
+        {
+            _nonBinaryChanceBuffer ??= (NonBinaryChance * 100f).ToString("N");
+
+            GUI.BeginGroup(region);
+
+            var listing = new Listing_Standard();
+
+            listing.Begin(region.AtZero());
+
+            (Rect label, Rect field) = listing.GetRectAsForm();
+            SettingsHelper.DrawLabel(label, "NonBinary.Chance".TranslateSimple());
+
+            if (SettingsHelper.DrawTextField(field, _nonBinaryChanceBuffer, out string result) && float.TryParse(result.TrimEnd('%'), out float value))
+            {
+                NonBinaryChance = value / 100f;
+            }
+
+            SettingsHelper.DrawFieldButton(field, "%");
+
+            listing.End();
+
+            GUI.EndGroup();
+        }
 
         public override void ExposeData()
         {
-            Scribe_Values.Look(ref NonBinaryChance, "nonBinaryChance", 10f);
+            Scribe_Values.Look(ref NonBinaryChance, "nonBinaryChance", 0.1f);
         }
     }
 }
