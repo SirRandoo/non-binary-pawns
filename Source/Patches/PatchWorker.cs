@@ -23,10 +23,12 @@
 using System.Reflection;
 using HarmonyLib;
 using JetBrains.Annotations;
+using Verse;
 
 namespace SirRandoo.NonBinary.Patches
 {
     [UsedImplicitly]
+    [StaticConstructorOnStartup]
     public static class PatchWorker
     {
         static PatchWorker()
