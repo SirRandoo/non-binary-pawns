@@ -42,6 +42,7 @@
         <Compile Include="Helpers\SettingsHelper.cs" />
         <Compile Include="Patches\PatchWorker.cs" />
         <Compile Include="Patches\PawnGeneratorPatch.cs" />
+        <Compile Include="Patches\ResolveAllGraphicsPatch.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Settings.cs" />
     </ItemGroup>
