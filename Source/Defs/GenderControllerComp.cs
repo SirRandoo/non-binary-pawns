@@ -34,6 +34,9 @@ namespace SirRandoo.NonBinary.Defs
         private List<FloatMenuOption> _options;
         private Pawn _pawn;
 
+        private bool _isFirstRun = true;
+        private Gender _initialGender = Gender.Male;
+
         [CanBeNull]
         private Pawn Pawn
         {
@@ -51,10 +54,12 @@ namespace SirRandoo.NonBinary.Defs
             }
         }
 
+        public Gender InitialGender => _initialGender;
+
         [ItemNotNull]
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
         {
-            if (!(Pawn is { IsColonist: true }) || !Pawn.RaceProps.Humanlike)
+            if (!IsValidTarget() || !Prefs.DevMode)
             {
                 yield break;
             }
@@ -78,6 +83,49 @@ namespace SirRandoo.NonBinary.Defs
             };
 
             Find.WindowStack.Add(new FloatMenu(_options));
+        }
+
+        public override void PostExposeData()
+        {
+            base.PostExposeData();
+
+            if (Pawn == null || !Pawn.RaceProps.Humanlike || !(Pawn is { IsColonist: true }))
+            {
+                return;
+            }
+
+            Scribe_Values.Look(ref _isFirstRun, "isFirstRun", true);
+            Scribe_Values.Look(ref _initialGender, "initialGender");
+        }
+
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            if (!IsValidTarget())
+            {
+                return;
+            }
+
+            PerformFirstRun();
+        }
+        internal void PerformFirstRun()
+        {
+            if (!_isFirstRun)
+            {
+                return;
+            }
+
+            _isFirstRun = false;
+            _initialGender = Pawn!.gender;
+        }
+
+        private bool IsValidTarget()
+        {
+            if (Pawn == null)
+            {
+                return false;
+            }
+
+            return Pawn.RaceProps.Humanlike && Pawn is { IsColonist: true };
         }
     }
 }
