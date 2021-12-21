@@ -42,7 +42,7 @@ namespace SirRandoo.NonBinary.Patches
         [SuppressMessage("ReSharper", "InconsistentNaming")]
         public static void Postfix(PawnGenerationRequest request, Pawn __result)
         {
-            if (request.FixedGender.HasValue || !__result.RaceProps.hasGenders || !Rand.Chance(Settings.NonBinaryChance))
+            if (request.FixedGender.HasValue || __result.RaceProps.Animal || !__result.RaceProps.hasGenders || !Rand.Chance(Settings.NonBinaryChance))
             {
                 return;
             }
