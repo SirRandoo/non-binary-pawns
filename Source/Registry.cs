@@ -20,42 +20,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using HarmonyLib;
 using JetBrains.Annotations;
-using SirRandoo.NonBinary.Defs;
 using Verse;
 
-namespace SirRandoo.NonBinary.Patches
+namespace SirRandoo.NonBinary
 {
-    [HarmonyPatch]
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    public static class PawnGeneratorPatch
+    public static class Registry
     {
-        public static IEnumerable<MethodBase> TargetMethods()
+        public static bool AndroidTiersActive = IsModActive("Atlas.AndroidTiers");
+        public static bool GynoidsActive = IsAnyModActive("Winterbloom.ATGynoids", "HHATGynoids.ATGVariantSubMod");
+
+        private static bool IsModActive(string identifier)
         {
-            yield return AccessTools.Method(typeof(PawnGenerator), "GeneratePawn", new[] { typeof(PawnGenerationRequest) });
+            return ModLister.GetActiveModWithIdentifier(identifier) != null;
         }
 
-        [SuppressMessage("ReSharper", "InconsistentNaming")]
-        public static void Postfix(PawnGenerationRequest request, Pawn __result)
+        private static bool IsAnyModActive([NotNull] params string[] identifiers)
         {
-            if (request.FixedGender.HasValue || !__result.RaceProps.hasGenders || !Rand.Chance(Settings.NonBinaryChance))
+            for (int i = 0; i < identifiers.Length; i++)
             {
-                return;
+                if (ModLister.GetActiveModWithIdentifier(identifiers[i]) != null)
+                {
+                    return true;
+                }
             }
 
-            var comp = __result.TryGetComp<GenderControllerComp>();
-
-            if (comp == null)
-            {
-                return;
-            }
-
-            comp.ChangeGender(Gender.None);
-            comp.ValidateSettings();
+            return false;
         }
     }
 }

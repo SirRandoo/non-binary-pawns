@@ -45,6 +45,7 @@
         <Compile Include="Patches\PawnGeneratorPatch.cs" />
         <Compile Include="Patches\ResolveAllGraphicsPatch.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="Registry.cs" />
         <Compile Include="Settings.cs" />
     </ItemGroup>
     <ItemGroup>

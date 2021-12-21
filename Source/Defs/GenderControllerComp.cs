@@ -34,7 +34,7 @@ namespace SirRandoo.NonBinary.Defs
         private List<FloatMenuOption> _options;
         private Pawn _pawn;
 
-        private bool _isFirstRun = true;
+        private bool _wasGenderSwapped;
         private Gender _initialGender = Gender.Male;
 
         [CanBeNull]
@@ -77,9 +77,9 @@ namespace SirRandoo.NonBinary.Defs
         {
             _options ??= new List<FloatMenuOption>
             {
-                new FloatMenuOption("Male".TranslateSimple(), () => Pawn!.gender = Gender.Male),
-                new FloatMenuOption("Female".TranslateSimple(), () => Pawn!.gender = Gender.Female),
-                new FloatMenuOption("None".TranslateSimple(), () => Pawn!.gender = Gender.None)
+                new FloatMenuOption("Male".TranslateSimple().CapitalizeFirst(), () => ChangeGender(Gender.Male)),
+                new FloatMenuOption("Female".TranslateSimple().CapitalizeFirst(), () => ChangeGender(Gender.Female)),
+                new FloatMenuOption("None".TranslateSimple().CapitalizeFirst(), () => ChangeGender(Gender.None))
             };
 
             Find.WindowStack.Add(new FloatMenu(_options));
@@ -94,28 +94,7 @@ namespace SirRandoo.NonBinary.Defs
                 return;
             }
 
-            Scribe_Values.Look(ref _isFirstRun, "isFirstRun", true);
             Scribe_Values.Look(ref _initialGender, "initialGender");
-        }
-
-        public override void PostSpawnSetup(bool respawningAfterLoad)
-        {
-            if (!IsValidTarget())
-            {
-                return;
-            }
-
-            PerformFirstRun();
-        }
-        internal void PerformFirstRun()
-        {
-            if (!_isFirstRun)
-            {
-                return;
-            }
-
-            _isFirstRun = false;
-            _initialGender = Pawn!.gender;
         }
 
         private bool IsValidTarget()
@@ -126,6 +105,42 @@ namespace SirRandoo.NonBinary.Defs
             }
 
             return Pawn.RaceProps.Humanlike && Pawn is { IsColonist: true };
+        }
+
+        internal void ChangeGender(Gender gender)
+        {
+            if (!_wasGenderSwapped)
+            {
+                _wasGenderSwapped = true;
+                _initialGender = Pawn!.gender;
+            }
+
+            Pawn!.gender = gender;
+        }
+
+        internal void ValidateSettings()
+        {
+            if (TryCorrectForAndroids())
+            {
+                return;
+            }
+        }
+        private bool TryCorrectForAndroids()
+        {
+            if (!Registry.AndroidTiersActive) // Gynoids depends on Android Tiers
+            {
+                return false;
+            }
+
+            switch (_initialGender)
+            {
+                case Gender.Female when !Registry.GynoidsActive:
+                    _initialGender = Gender.Male;
+
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }
