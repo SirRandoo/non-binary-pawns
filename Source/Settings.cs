@@ -30,6 +30,7 @@ namespace SirRandoo.NonBinary
     public class Settings : ModSettings
     {
         public static float NonBinaryChance = 0.1f;
+        private static float lastChance = 0f;
         private static string _nonBinaryChanceBuffer;
 
         public static void Draw(Rect region)
@@ -45,9 +46,16 @@ namespace SirRandoo.NonBinary
             (Rect label, Rect field) = listing.GetRectAsForm();
             SettingsHelper.DrawLabel(label, "NonBinary.Chance".TranslateSimple());
 
-            if (SettingsHelper.DrawTextField(field, _nonBinaryChanceBuffer, out string result) && float.TryParse(result.TrimEnd('%'), out float value))
+            if (SettingsHelper.DrawTextField(field, _nonBinaryChanceBuffer, out string result))
             {
-                NonBinaryChance = value / 100f;
+                _nonBinaryChanceBuffer = result;
+
+                if (float.TryParse(result, out float value) && Math.Abs(NonBinaryChance - lastChance) > 0.02f)
+                {
+                    NonBinaryChance = value / 100f;
+                    lastChance = NonBinaryChance;
+                    _nonBinaryChanceBuffer = value.ToString("N");
+                }
             }
 
             SettingsHelper.DrawFieldButton(field, "%");
